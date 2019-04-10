@@ -53,7 +53,7 @@ namespace Fare
         private RegExp exp1;
         private RegExp exp2;
         private char from;
-        private Kind kind;
+        internal Kind kind;
         private int max;
         private int min;
         private int pos;
@@ -1023,24 +1023,5 @@ namespace Fare
             return MakeIntersection(allChars, MakeComplement(exclusion));
         }
 
-        private enum Kind
-        {
-            RegexpUnion,
-            RegexpConcatenation,
-            RegexpIntersection,
-            RegexpOptional,
-            RegexpRepeat,
-            RegexpRepeatMin,
-            RegexpRepeatMinMax,
-            RegexpComplement,
-            RegexpChar,
-            RegexpCharRange,
-            RegexpAnyChar,
-            RegexpEmpty,
-            RegexpString,
-            RegexpAnyString,
-            RegexpAutomaton,
-            RegexpInterval
-        }
     }
 }
