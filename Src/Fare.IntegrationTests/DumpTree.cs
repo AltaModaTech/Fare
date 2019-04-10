@@ -18,7 +18,7 @@ namespace Fare.IntegrationTests
         }
 
 
-        [Fact]
+        [Fact(Skip = "Only used for dumping info (not a test)")]
         public void DumpAST()
         {
 
@@ -37,6 +37,23 @@ namespace Fare.IntegrationTests
                     _testOutput.WriteLine($"\t\tTransition to: {trans.To.Id} [{trans.Min} - {trans.Max}]" );
                 }
             }
+
+            // fail test to get output
+            Assert.True(false);
+
+        }
+
+
+        [Fact(Skip = "Only used for dumping info (not a test)")]
+        public void DumpRegEx()
+        {
+
+            string rawRegEx = @"\d{3}\d3}";
+
+            Fare.RegExp e = new Fare.RegExp(rawRegEx);
+
+            _testOutput.WriteLine(e.ToString());
+            
 
             // fail test to get output
             Assert.True(false);
