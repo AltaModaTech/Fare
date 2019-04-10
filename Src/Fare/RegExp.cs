@@ -49,16 +49,26 @@ namespace Fare
         private static bool allowMutation;
 
         private char c;
+        internal char Char { get { return c; }  private set { c = value; } }
         private int digits;
+        internal int Digits { get { return digits; }  private set { digits = value; } }
         private RegExp exp1;
+        internal RegExp Expr1 { get { return exp1; } private set { exp1 = value; }}
         private RegExp exp2;
+        internal RegExp Expr2 { get { return exp2; } private set { exp2 = value; }}
         private char from;
-        internal Kind kind;
+        internal char FromChar { get { return from; }  private set { from = value; } }
+        private Kind kind;
+        internal Kind Kind { get {return kind; }  private set { kind = value; }}
         private int max;
+        internal int Max { get { return max; }  private set { max = value; } }
         private int min;
+        internal int Min { get { return min; }  private set { min = value; } }
         private int pos;
         private string s;
+        internal string SourceRegExpr { get { return s; }  private set { s = value; } }
         private char to;
+        internal char ToChar { get { return to; }  private set { to = value; } }
 
         /// <summary>
         ///   Prevents a default instance of the <see cref = "RegExp" /> class from being created.
@@ -538,7 +548,8 @@ namespace Fare
             }
         }
 
-        private StringBuilder ToStringBuilder(StringBuilder sb)
+        // TODO: make private after removing use from AST
+        internal StringBuilder ToStringBuilder(StringBuilder sb)
         {
             switch (kind)
             {
