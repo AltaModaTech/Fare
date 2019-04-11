@@ -15,7 +15,17 @@
         }
         ,{
             "label": "test"
-            ,"command": "dotnet test  ./Src/Fare.IntegrationTests/Fare.IntegrationTests.csproj"
+            ,"command": "dotnet test  ./Fare.IntegrationTests/Fare.IntegrationTests.csproj"
+            ,"type": "shell",
+            "group": "test",
+            "presentation": {
+                "reveal":"silent"
+            },
+            "problemMatcher": "$msCompile"
+        }
+        ,{
+            "label": "test-netcoreapp2.1"
+            ,"command": "dotnet test -f netcoreapp2.1 ./Fare.IntegrationTests/Fare.IntegrationTests.csproj"
             ,"type": "shell",
             "group": "test",
             "presentation": {
