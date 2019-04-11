@@ -20,9 +20,7 @@ namespace Fare.IntegrationTests
         [Fact]
         public void Test1()
         {
-            var automaton1 = new RegExp(@"\d{3}").ToAutomaton();
-
-            var ast = AbstractSyntaxTree.Generate(automaton1);
+            var ast = AbstractSyntaxTree.Generate(new RegExp(@"\d{3}\w{2}"));
             _testOutput.WriteLine(ast);
 
             Assert.True(false);

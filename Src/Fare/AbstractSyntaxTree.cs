@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+
 namespace Fare
 {
 
@@ -11,33 +12,7 @@ namespace Fare
     {
         public static string Generate(RegExp regex)
         {
-
-            return regex.ToString();
-        }
-
-
-        public static string Generate(Automaton root)
-        {
-            StringBuilder bldr = new StringBuilder();
-
-            if (null != root)
-            {
-                var a = root;
-
-                bldr.Append(CreateASTLine(a, 0));
-                
-                foreach (var state in a.GetStates())
-                {
-                    bldr.Append(CreateASTLine($"\tState Id:{state.Id}, Number:{state.Number}) has {state.Transitions.Count} transitions", 1 ));
-                    foreach (var trans in state.GetSortedTransitions(false))
-                    {
-                        bldr.Append(CreateASTLine($"\t\tTransition to: {trans.To.Id} [{trans.Min} - {trans.Max}]", 2 ));
-                    }
-                }
-
-            }
-
-            return bldr.ToString();
+            return ToStringBuilder(regex).ToString();
         }
 
 
@@ -75,7 +50,7 @@ namespace Fare
 
 
         
-        private StringBuilder ToStringBuilder(RegExp regex)
+        private static StringBuilder ToStringBuilder(RegExp regex)
         {
             StringBuilder sb = new StringBuilder(2048);
 
