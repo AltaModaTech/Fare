@@ -130,6 +130,7 @@ namespace Fare
                 regExp = regExp.Substring(1);
             }
 
+            // BUGBUG: this fails to remove $ if followed by any white space
             if (regExp.EndsWith("$"))
             {
                 regExp = regExp.Substring(0, regExp.Length - 1);
