@@ -17,7 +17,7 @@ namespace Fare.IntegrationTests
         }
 
 
-        [Fact]
+        [Fact(Skip="WIP")]
         public void Test1()
         {
             var ast = AbstractSyntaxTree.Generate(new RegExp(@"\d{3}\w{2}"));
