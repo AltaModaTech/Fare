@@ -123,7 +123,7 @@ namespace Fare
             builder.Append(c);
         }
 
-        private string RemoveStartEndMarkers(string regExp)
+        private static string RemoveStartEndMarkers(string regExp)
         {
             if (regExp.StartsWith("^", System.StringComparison.CurrentCulture))
             {

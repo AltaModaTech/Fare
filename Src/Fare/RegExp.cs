@@ -48,7 +48,7 @@ namespace Fare
         private readonly string b;
         private readonly RegExpSyntaxOptions flags;
 
-        private static bool allowMutation;
+        private bool allowMutation;
         private int pos;
 
 
