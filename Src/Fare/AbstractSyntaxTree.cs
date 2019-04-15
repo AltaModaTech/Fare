@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Text;
 namespace Fare
 {
 
-    public class AbstractSyntaxTree
+    public static class AbstractSyntaxTree
     {
         public static string Generate(RegExp regex)
         {
@@ -18,13 +19,13 @@ namespace Fare
 
         private static string CreateASTLine(string str, uint indent)
         {
-            return string.Format("{0}{1}\n", CreateIndentString(indent), str);
+            return string.Format(CultureInfo.CurrentCulture, "{0}{1}\n", CreateIndentString(indent), str);
         }
 
 
         private static string CreateASTLine(Automaton a, uint indent)
         {
-            return string.Format("{0}{1}\n", CreateIndentString(indent), GetAutomatonInfo(a));
+            return string.Format(CultureInfo.CurrentCulture, "{0}{1}\n", CreateIndentString(indent), GetAutomatonInfo(a));
         }
 
 
@@ -121,8 +122,8 @@ namespace Fare
                     sb.Append("<").Append(regex.SourceRegExpr).Append(">");
                     break;
                 case Kind.RegexpInterval:
-                    string s1 = Convert.ToDecimal(regex.Min).ToString();
-                    string s2 = Convert.ToDecimal(regex.Max).ToString();
+                    string s1 = Convert.ToDecimal(regex.Min).ToString(CultureInfo.CurrentCulture);
+                    string s2 = Convert.ToDecimal(regex.Max).ToString(CultureInfo.CurrentCulture);
                     sb.Append("<");
                     if (regex.Digits > 0)
                     {

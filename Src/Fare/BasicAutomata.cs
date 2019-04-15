@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -74,7 +75,7 @@ namespace Fare
         public static Automaton MakeChar(char c)
         {
             var a = new Automaton();
-            a.Singleton = c.ToString();
+            a.Singleton = c.ToString(CultureInfo.CurrentCulture);
             a.IsDeterministic = true;
             return a;
         }
@@ -153,8 +154,8 @@ namespace Fare
         public static Automaton MakeInterval(int min, int max, int digits)
         {
             var a = new Automaton();
-            string x = Convert.ToString(min);
-            string y = Convert.ToString(max);
+            string x = Convert.ToString(min, CultureInfo.CurrentCulture);
+            string y = Convert.ToString(max, CultureInfo.CurrentCulture);
             if (min > max || (digits > 0 && y.Length > digits))
             {
                 throw new ArgumentException();
@@ -654,7 +655,7 @@ namespace Fare
                 for (int j = i; j >= 1; j--)
                 {
                     char d = s[j - 1];
-                    if (!done.Contains(d) && s.Substring(0, j - 1).Equals(s.Substring(i - j + 1, i - (i - j + 1))))
+                    if (!done.Contains(d) && s.Substring(0, j - 1).Equals(s.Substring(i - j + 1, i - (i - j + 1)), StringComparison.CurrentCulture))
                     {
                         states[i].Transitions.Add(new Transition(d, states[j]));
                         done.Add(d);

@@ -206,7 +206,7 @@ namespace Fare
             else
             {
                 sb.Append("\\u");
-                string s = ((int)c).ToString("x");
+                string s = ((int)c).ToString("x", System.Globalization.NumberFormatInfo.CurrentInfo);
                 if (c < 0x10)
                 {
                     sb.Append("000").Append(s);

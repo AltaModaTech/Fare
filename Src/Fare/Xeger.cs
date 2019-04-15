@@ -125,13 +125,13 @@ namespace Fare
 
         private string RemoveStartEndMarkers(string regExp)
         {
-            if (regExp.StartsWith("^"))
+            if (regExp.StartsWith("^", System.StringComparison.CurrentCulture))
             {
                 regExp = regExp.Substring(1);
             }
 
             // BUGBUG: this fails to remove $ if followed by any white space
-            if (regExp.EndsWith("$"))
+            if (regExp.EndsWith("$", System.StringComparison.CurrentCulture))
             {
                 regExp = regExp.Substring(0, regExp.Length - 1);
             }

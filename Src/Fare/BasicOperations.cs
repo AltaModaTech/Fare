@@ -677,7 +677,7 @@ namespace Fare
         {
             if (a.IsSingleton)
             {
-                return s.Equals(a.Singleton);
+                return s.Equals(a.Singleton, System.StringComparison.CurrentCulture);
             }
 
             if (a.IsDeterministic)

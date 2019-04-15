@@ -180,7 +180,7 @@ namespace Fare
         {
             private bool isFinal;
 
-            private  char[] labels = Array.Empty<char>(); //new char[0];
+            private  char[] labels = Array.Empty<char>();
             private State[] states = Array.Empty<State>();
 
 

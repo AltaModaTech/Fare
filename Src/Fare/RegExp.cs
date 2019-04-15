@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -610,8 +611,8 @@ namespace Fare
                     sb.Append("<").Append(SourceRegExpr).Append(">");
                     break;
                 case Kind.RegexpInterval:
-                    string s1 = Convert.ToDecimal(Min).ToString();
-                    string s2 = Convert.ToDecimal(Max).ToString();
+                    string s1 = Convert.ToDecimal(Min).ToString(NumberFormatInfo.CurrentInfo);
+                    string s2 = Convert.ToDecimal(Max).ToString(NumberFormatInfo.CurrentInfo);
                     sb.Append("<");
                     if (Digits > 0)
                     {
@@ -754,7 +755,7 @@ namespace Fare
                         throw new ArgumentException("integer expected at position " + pos);
                     }
 
-                    int n = int.Parse(b.Substring(start, pos - start));
+                    int n = int.Parse(b.Substring(start, pos - start), NumberFormatInfo.CurrentInfo);
                     int m = -1;
                     if (this.Match(','))
                     {
@@ -766,7 +767,7 @@ namespace Fare
 
                         if (start != pos)
                         {
-                            m = int.Parse(b.Substring(start, pos - start));
+                            m = int.Parse(b.Substring(start, pos - start), NumberFormatInfo.CurrentInfo);
                         }
                     }
                     else
@@ -926,8 +927,8 @@ namespace Fare
 
                     string smin = str.Substring(0, i - 0);
                     string smax = str.Substring(i + 1, (str.Length - (i + 1)));
-                    int imin = int.Parse(smin);
-                    int imax = int.Parse(smax);
+                    int imin = int.Parse(smin, System.Globalization.NumberFormatInfo.CurrentInfo);
+                    int imax = int.Parse(smax, System.Globalization.NumberFormatInfo.CurrentInfo);
                     int numdigits = smin.Length == smax.Length ? smin.Length : 0;
                     if (imin > imax)
                     {
