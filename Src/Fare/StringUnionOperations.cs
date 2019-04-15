@@ -178,12 +178,11 @@ namespace Fare
 
         private sealed class State
         {
-            private static readonly  char[] noLabels = new char[0];
-            private static readonly State[] noStates = new State[0];
             private bool isFinal;
 
-            private  char[] labels = noLabels;
-            private State[] states = noStates;
+            private  char[] labels = Array.Empty<char>(); //new char[0];
+            private State[] states = Array.Empty<State>();
+
 
             public char[] TransitionLabels
             {
