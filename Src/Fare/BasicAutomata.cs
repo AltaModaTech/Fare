@@ -153,12 +153,15 @@ namespace Fare
         /// in the given interval.</returns>
         public static Automaton MakeInterval(int min, int max, int digits)
         {
+            if (min > max) { throw new ArgumentException("min must not be greater than max."); }
+
             var a = new Automaton();
             string x = Convert.ToString(min, CultureInfo.CurrentCulture);
             string y = Convert.ToString(max, CultureInfo.CurrentCulture);
-            if (min > max || (digits > 0 && y.Length > digits))
+
+            if ((digits > 0 && y.Length > digits))
             {
-                throw new ArgumentException();
+                throw new ArgumentException($"Fixed length output specified ({digits}), but will not fit max ({y.Length}).");
             }
 
             int d = digits > 0 ? digits : y.Length;
