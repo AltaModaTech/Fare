@@ -16,7 +16,7 @@ namespace Fare.IntegrationTests
         
 
 
-        [Theory(Skip = "BROKEN: Expanded pattern from ToString not functionally same as input pattern"), ClassData(typeof(ExpressionWithExpansionTestData))]
+        [Theory, ClassData(typeof(ExpressionWithExpansionTestData))]
         public void GeneratedTextIsCorrect(string pattern, string expanded)
         {
             RegExp exp = new RegExp(pattern, RegExpSyntaxOptions.All);
