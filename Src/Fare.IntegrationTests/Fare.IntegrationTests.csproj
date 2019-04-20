@@ -3,7 +3,7 @@
 
   <!-- Target frameworks by platform  -->
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <TargetFrameworks>net452;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
@@ -29,19 +29,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.*" />
     <ProjectReference Include="..\Fare\Fare.csproj" />
 
     <Reference Include="Rex" Condition=" '$(TargetFramework)'=='net452' ">
       <HintPath>..\..\References\Rex.exe</HintPath>
     </Reference>
 
-    <PackageReference Include="xunit" Version="2.3.0" />
-    <PackageReference Include="xunit.runner.reporters" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
+    <PackageReference Include="xunit" Version="2.3.*" />
+    <PackageReference Include="xunit.runner.reporters" Version="2.4.*" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.*" />
 
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.*" />
   </ItemGroup>
 
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="microsoft.extensions.logging" Version="2.2.*" />
+    <PackageReference Include="microsoft.extensions.logging.console" Version="2.2.*" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
