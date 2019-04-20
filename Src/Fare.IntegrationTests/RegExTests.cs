@@ -15,13 +15,18 @@ namespace Fare.IntegrationTests
         }
         
 
-
+        /*
+         *  Verifies RegExp reproduces an equivalent, expanded representation after 
+         *   converting input pattern to its internal automata.  This helps ensure
+         *   the conversion to automata is accurate for generating text to match
+         *   the pattern.
+         */
         [Theory, ClassData(typeof(ExpressionWithExpansionTestData))]
-        public void GeneratedTextIsCorrect(string pattern, string expanded)
+        public void ExpandedPatternIsCorrect(string pattern, string expanded)
         {
             RegExp exp = new RegExp(pattern, RegExpSyntaxOptions.All);
 
-            
+
             Assert.Equal(expanded, exp.ToString());
         }
 

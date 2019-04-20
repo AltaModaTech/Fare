@@ -16,24 +16,25 @@ namespace Fare.IntegrationTests
         }
 
         
+        // Verify Xeger generated values match the regex pattern
         [Theory, ClassData(typeof(RegExPatternTestData))]
         public void GeneratedTextIsCorrect(string pattern)
         {
-            string[] result = GenerateTestOfPattern(pattern);
+            string[] result = GenerateTextOfPattern(pattern, defaultRepeatCount);
 
             Assert.All(result, regex => Assert.Matches(pattern, regex));
         }
+
 
 #if REX_AVAILABLE
         [Theory, ClassData(typeof(RegExPatternTestData))]
         public void GeneratedTextIsCorrectWithRexEngine(string pattern)
         {
-            const int repeatCount = 3;
             var settings = new Rex.RexSettings(pattern) { k = 1 };
             // Fix generated value doesn't always meet the pattern
             settings.encoding = Rex.CharacterEncoding.ASCII;
 
-            var result = Enumerable.Repeat(0, repeatCount)
+            var result = Enumerable.Repeat(0, defaultRepeatCount)
                 .Select(_ =>
                 {
                     var generatedValue  = Rex.RexEngine.GenerateMembers(settings).Single();
@@ -46,10 +47,12 @@ namespace Fare.IntegrationTests
         }
 #endif
 
+
+        // Verify Xeger generated values match the expanded regex pattern
         [Theory(Skip = "BROKEN: pattern expansion not functional match for input pattern"), ClassData(typeof(RegExPatternTestData))]
         public void GeneratedTextIsCorrectWithExpanded(string pattern)
         {
-            string[] result = GenerateTestOfPattern(pattern);
+            string[] result = GenerateTextOfPattern(pattern, defaultRepeatCount);
 
             // Assert
             Assert.All(result, regex => Assert.Matches(pattern, regex));
@@ -61,10 +64,9 @@ namespace Fare.IntegrationTests
         }
 
 
-        private string[] GenerateTestOfPattern(string pattern)
+        // Uses Xeger to generate multiple values which should match the regex pattern
+        private string[] GenerateTextOfPattern(string pattern, int repeatCount)
         {
-            const int repeatCount = 3;
-
             var randomSeed = Environment.TickCount;
             this._testOutput.WriteLine($"Random seed: {randomSeed}");
 
@@ -77,11 +79,14 @@ namespace Fare.IntegrationTests
                 .Select(_ =>
                 {
                     var generatedValue = sut.Generate();
-                    this._testOutput.WriteLine($"Generated value: {generatedValue}");
+                    this._testOutput.WriteLine($"Generated value {generatedValue} for {pattern}");
                     return generatedValue;
                 })
                 .ToArray();
             return result;
         }
+
+
+        private const int defaultRepeatCount = 3;
     }
 }

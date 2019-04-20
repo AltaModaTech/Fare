@@ -590,19 +590,20 @@ namespace Fare
                     sb.Append(")");
                     break;
                 case Kind.RegexpChar:
-                    sb.Append("\\").Append(this.Char);
+                    sb.Append(this.Char);
                     break;
                 case Kind.RegexpCharRange:
-                    sb.Append("[\\").Append(FromChar).Append("-\\").Append(ToChar).Append("]");
+                    sb.Append("[").Append(FromChar).Append("-").Append(ToChar).Append("]");
                     break;
                 case Kind.RegexpAnyChar:
                     sb.Append(".");
                     break;
                 case Kind.RegexpEmpty:
-                    sb.Append("#");
+                    sb.Append(string.Empty);    // TODO: consider not appending at all
                     break;
                 case Kind.RegexpString:
-                    sb.Append("\"").Append(SourceRegExpr).Append("\"");
+//                     sb.Append("\"").Append(SourceRegExpr).Append("\"");  // TODO: REMOVE:
+                    sb.Append(SourceRegExpr);
                     break;
                 case Kind.RegexpAnyString:
                     sb.Append("@");

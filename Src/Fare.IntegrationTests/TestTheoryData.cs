@@ -16,6 +16,14 @@ namespace Fare.IntegrationTests
 
         public IEnumerator<object[]> GetEnumerator()
         {
+// BUGBUG:            yield return new object[] { @"#" };
+// BUGBUG:            yield return new object[] { @"J#" };
+// BUGBUG:            yield return new object[] { @"#J" };
+
+            yield return new object[] { @"\d#\d" };
+            yield return new object[] { @"\d(#)\d" };
+            yield return new object[] { @"\d{8}(#)\d{3}" };     // https://github.com/moodmosaic/Fare/issues/32
+
             yield return new object[] { "[ab]{4,6}" };
             yield return new object[] { "[ab]{4,6}c" };
             yield return new object[] { "(a|b)*ab" };
@@ -81,6 +89,7 @@ namespace Fare.IntegrationTests
             yield return new object[] { @"\w+1\w{4}" };
             yield return new object[] { @"\W+1\w?2\W{4}" };
             yield return new object[] { @"^[^$]$" };
+
         }
     }
 
@@ -90,27 +99,70 @@ namespace Fare.IntegrationTests
     {
         public IEnumerator<object[]> GetEnumerator()
         {
+
+            /* Shorthand handling
+             *  .NET supports: \d, \s, \w
+             *  
+             */
+            yield return new object[] { @"\d", @"[0-9]" };
+// BUGBUG:            yield return new object[] { @"\s", @"( |\t)" }; // REVIEW: is this expansion correct?
+// BUGBUG:            yield return new object[] { @"\w", @"(((\_|[A-Z])|[a-z])|[0-9])" };
+
+
+            yield return new object[] { @"", @"" };
+
+            /* Range handling */
+// BUGBUG:            yield return new object[] { @"[]", @"" };   // empty range
+            yield return new object[] { @"[j]", @"j" }; // single char range
+            yield return new object[] { @"[j-m]", @"[j-m]" };   // small, lowercase range
+            yield return new object[] { @"[A-z]", @"[A-z]" };
+            
+
+            yield return new object[] { @"#", @"#" };
+            yield return new object[] { @"J#", @"J#" };
+            yield return new object[] { @"#J", @"#J" };
+            yield return new object[] { @"#\d", @"#[0-9]" };
+            yield return new object[] { @"\d#", @"[0-9]#" };
+
+
+            // TODO: ok that expansion drops grouping parens?
+            yield return new object[] { @"\d(#)", @"[0-9]#" };  // group at end
+            yield return new object[] { @"(#)\d", @"#[0-9]" };   // group at beginning
+            yield return new object[] { @"\d(#)\d", @"[0-9]#[0-9]" };   // group in middle
+
             /* TODO: BUGBUG: the expanded versions seem incorrect or too heavy on parens
                 e.g., should 'a' expand to '\a'?  '9' to '\9'?
             */
-            yield return new object[] { @"a", @"\a" };  // incorrect, but passes
-            yield return new object[] { @"a", "\\a" };    // incorrect, fn'ly equivalent to previous
+            yield return new object[] { @"a", @"a" };
+            yield return new object[] { @"a(b)c", "abc" };
 // BUGBUG:            yield return new object[] { @"a", "\\a" };   // correct, but fails
 
-            yield return new object[] { @"\d", @"[\0-\9]" };  // incorrect, but passes
-// BUGBUG:            yield return new object[] { @"\d", @"[0-9]" };   // correct, but fails
-
-            yield return new object[] { @"\a", "\\a" };
-            yield return new object[] { "\\a", "\\a" };
+            // yield return new object[] { @"\a", "\\a" };
+            // yield return new object[] { "\\a", "\\a" };
 
             // All of these pass, but seem incorrect
-            yield return new  object[] { @"[ab]{4,6}", @"((\a|\b)){4,6}" };
-            yield return new  object[] { @"[ab]{4,6}c", @"((\a|\b)){4,6}\c" };
-            yield return new object[] { @"\w", @"(((\_|[\A-\Z])|[\a-\z])|[\0-\9])" };
+            yield return new  object[] { @"[ab]{4,6}", @"((a|b)){4,6}" };
+            yield return new  object[] { @"[ab]{4,6}c", @"((a|b)){4,6}c" };
+
+
+            /* BUGBUG: RegExp.ToString
+            yield return new object[] { "abc(?#this is a comment)xyz", "abcxyz" };  // strips group: abcthis is a commentxyz
+            yield return new object[] { @"\d{8}#\d{3}", @"[0-9]{8,8}#[0-9]{3,3}" }; // creates extraneous groups: ([0-9]){8,8}#([0-9]){3,3}
+            yield return new object[] { @"\d{8}(#)\d{3}", @"[0-9]{8,8}#[0-9]{3,3}" };   // strips group & adds extraneous: ([0-9]){8,8}#([0-9]){3,3}
+            yield return new object[] { @"a\(bc\)", @"a\(bc\)" };   // loses escaping: a(bc)
+
+            */
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
+/* Interesting test cases
+ - Special groups:
+ -- Comment:  abc(?#This is a comment)xyz  should match abcxyz.
+ -- Conditional: (?(1)then|else)
+ -- [Positive | negative] [Lookahead | Lookbehind]
+
+ */
 
 }
