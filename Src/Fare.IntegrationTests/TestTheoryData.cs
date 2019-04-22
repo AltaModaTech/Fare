@@ -16,10 +16,9 @@ namespace Fare.IntegrationTests
 
         public IEnumerator<object[]> GetEnumerator()
         {
-// BUGBUG:            yield return new object[] { @"#" };
-// BUGBUG:            yield return new object[] { @"J#" };
-// BUGBUG:            yield return new object[] { @"#J" };
-
+            yield return new object[] { @"#" };
+            yield return new object[] { @"J#" };
+            yield return new object[] { @"#J" };
             yield return new object[] { @"\d#\d" };
             yield return new object[] { @"\d(#)\d" };
             yield return new object[] { @"\d{8}(#)\d{3}" };     // https://github.com/moodmosaic/Fare/issues/32
