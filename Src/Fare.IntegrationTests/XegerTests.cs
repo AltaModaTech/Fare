@@ -22,7 +22,7 @@ namespace Fare.IntegrationTests
         {
             string[] result = GenerateTextOfPattern(pattern, defaultRepeatCount);
 
-            Assert.All(result, regex => Assert.Matches(pattern, regex));
+            Assert.All(result, generatedText => Assert.Matches(pattern, generatedText));
         }
 
 
@@ -48,19 +48,26 @@ namespace Fare.IntegrationTests
 #endif
 
 
+        /* This test verifies that RegExp.ToString provides an accurate representation of the input expression.
+         *  RegExp converts the expression to automota, and ToString should be able to provide a functional
+         *  equivalent.  If ToString's representation is not a functional match, major causes may be:
+         *  1) RegExp's internal representation (automata) is wrong,
+         *  2) RegExp's ToString method does not recreate functionally equivalent expression from the 
+         *      internal representation.
+         */
         // Verify Xeger generated values match the expanded regex pattern
         [Theory(Skip = "BROKEN: pattern expansion not functional match for input pattern"), ClassData(typeof(RegExPatternTestData))]
         public void GeneratedTextIsCorrectWithExpanded(string pattern)
         {
+            // Generate matches from input pattern
             string[] result = GenerateTextOfPattern(pattern, defaultRepeatCount);
 
-            // Assert
-            Assert.All(result, regex => Assert.Matches(pattern, regex));
-
+            // Recreate pattern based on RegExp's internal representation
             var r = new RegExp(pattern);
             var expanded = new RegExp(pattern).ToString();
-            Assert.All(result, regex => Assert.Matches(expanded, regex));
 
+            // Generated matches should also match the expanded expression
+            Assert.All(result, generatedText => Assert.Matches(expanded, generatedText));
         }
 
 
