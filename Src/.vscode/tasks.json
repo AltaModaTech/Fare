@@ -12,34 +12,30 @@
                 "reveal": "silent"
             },
             "problemMatcher": "$msCompile"
-        }
-        ,{
-            "label": "test"
-            ,"command": "dotnet test  ./Fare.IntegrationTests/Fare.IntegrationTests.csproj"
-            ,"type": "shell",
+        },
+        {
+            "label": "test",
+            "command": "dotnet test",
+            "type": "shell",
             "group": "test",
             "presentation": {
-                "reveal":"silent"
+                "reveal": "silent"
             },
             "problemMatcher": "$msCompile"
-        }
-        ,{
-            "label": "test-netcoreapp2.1"
-            ,"command": "dotnet test -f netcoreapp2.1 ./Fare.IntegrationTests/Fare.IntegrationTests.csproj"
-            ,"type": "shell",
+        },
+        {
+            "label": "test-CC",
+            "command": "dotnet",
+            "args": [
+                "test",
+                "/p:CodeCoverager=true",
+                "/p:Include='[Fare*]*'",
+                "/p:Exclude='[Fare.Integration*]*'", 
+            ],
+            "type": "shell",
             "group": "test",
             "presentation": {
-                "reveal":"silent"
-            },
-            "problemMatcher": "$msCompile"
-        }
-        ,{
-            "label": "test-CC"
-            ,"command": "coverlet ./Fare.IntegrationTests/bin/debug/netcoreapp2.1/Fare.IntegrationTests.dll --target 'dotnet' --targetargs 'test ./Fare.IntegrationTests/Fare.IntegrationTests.csproj --no-build'"
-            ,"type": "shell",
-            "group": "test",
-            "presentation": {
-                "reveal":"silent"
+                "reveal":"always"
             },
             "problemMatcher": "$msCompile"
         }
