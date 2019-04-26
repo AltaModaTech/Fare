@@ -31,7 +31,7 @@ namespace Fare.IntegrationTests
             
             foreach (var state in a.GetStates())
             {
-                _testOutput.WriteLine($"\tState (Id:{state.Id}, Number:{state.Number}) has {state.Transitions.Count} transitions" );
+                _testOutput.WriteLine($"\tState (Id:{state.Id}, Number:{state.Number}, Accept: {state.Accept}) has {state.Transitions.Count} transitions" );
                 foreach (var trans in state.GetSortedTransitions(false))
                 {
                     _testOutput.WriteLine($"\t\tTransition to: {trans.To.Id} [{trans.Min} - {trans.Max}]" );
@@ -43,6 +43,26 @@ namespace Fare.IntegrationTests
 
         }
 
+
+        [Fact]
+        // [Fact(Skip = "Only used for dumping info (not a test)")]
+        public void DumpDot()
+        {
+
+            string rawRegEx = @"\d{3}-\d{2}-(a|q)J";
+            rawRegEx = @"0x[0-9A-Fa-f]{4}";
+
+            Fare.RegExp e = new Fare.RegExp(rawRegEx);
+            var a = e.ToAutomaton();
+
+            _testOutput.WriteLine($"/* {rawRegEx} */");
+            _testOutput.WriteLine(Fare.DotFormatter.ToDot(a));
+
+            // fail test to get output
+            Assert.True(false);
+
+        }
+        
 
         [Fact(Skip = "Only used for dumping info (not a test)")]
         public void DumpRegEx()
