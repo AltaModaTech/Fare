@@ -8,6 +8,10 @@
 *.suo
 *.user
 
+# DOT output and generated graphics files
+*.dot
+*.svg
+
 # DotCover is a Code Coverage Tool
 *.dotCover
 
