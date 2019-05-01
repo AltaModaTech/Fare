@@ -44,8 +44,8 @@ namespace Fare.IntegrationTests
         }
 
 
-        [Fact]
-        // [Fact(Skip = "Only used for dumping info (not a test)")]
+        // [Fact]
+        [Fact(Skip = "Only used for dumping info (not a test)")]
         public void DumpDot()
         {
 
