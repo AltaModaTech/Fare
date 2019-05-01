@@ -71,7 +71,7 @@ namespace Fare
         }
 
 
-        private static readonly int INITIAL_CAPACITY = 2048; // about 2k
+        private const int INITIAL_CAPACITY = 2048; // about 2k
         private static StringBuilder sb = new StringBuilder(INITIAL_CAPACITY);
 
     }
