@@ -123,6 +123,9 @@ namespace Fare.IntegrationTests
             yield return new object[] { @"#\d", @"#[0-9]" };
             yield return new object[] { @"\d#", @"[0-9]#" };
 
+            // Optional group
+            yield return new object[] { @"\d(xyz)?\d?", @"[0-9](xyz)?([0-9])?" };  // BUGBUG: unnecessary group at end
+
 
             // TODO: ok that expansion drops grouping parens?
             yield return new object[] { @"\d(#)", @"[0-9]#" };  // group at end
@@ -151,6 +154,11 @@ namespace Fare.IntegrationTests
             yield return new object[] { @"a\(bc\)", @"a\(bc\)" };   // loses escaping: a(bc)
 
             */
+
+
+            // Bugs found re DotFormatter; optionality lost (maybe in automaton to dot?) 
+            yield return new object[] { @"\d?\w\d", "([0-9])?(((_|[A-Z])|[a-z])|[0-9])[0-9]" };
+            yield return new object[] { @"\d?\w?\d", "([0-9])?((((_|[A-Z])|[a-z])|[0-9]))?[0-9]" };
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
