@@ -4,6 +4,9 @@
 [Oo]bj/
 [Hh]elp/
 
+# Code analytics dir
+analytics/
+
 # User-specific files
 *.suo
 *.user
