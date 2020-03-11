@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\Common.props" />
 
   <!-- Target frameworks by platform  -->
@@ -23,7 +23,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)'=='net452' ">
+  <PropertyGroup Condition=" '$(TargetFramework)'=='net461' ">
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>$(DefineConstants);REX_AVAILABLE</DefineConstants>
   </PropertyGroup>
@@ -37,7 +37,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.*" />
     <ProjectReference Include="..\Fare\Fare.csproj" />
 
-    <Reference Include="Rex" Condition=" '$(TargetFramework)'=='net452' ">
+    <Reference Include="Rex" Condition=" '$(TargetFramework)'=='net461' ">
       <HintPath>..\..\References\Rex.exe</HintPath>
     </Reference>
 
