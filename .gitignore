@@ -4,9 +4,16 @@
 [Oo]bj/
 [Hh]elp/
 
+# Code analytics dir
+analytics/
+
 # User-specific files
 *.suo
 *.user
+
+# DOT output and generated graphics files
+*.dot
+*.svg
 
 # DotCover is a Code Coverage Tool
 *.dotCover

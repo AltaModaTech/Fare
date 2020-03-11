@@ -32,9 +32,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 
 namespace Fare
 {
@@ -46,19 +48,21 @@ namespace Fare
         private readonly string b;
         private readonly RegExpSyntaxOptions flags;
 
-        private static bool allowMutation;
-
-        private char c;
-        private int digits;
-        private RegExp exp1;
-        private RegExp exp2;
-        private char from;
-        private Kind kind;
-        private int max;
-        private int min;
+        private bool allowMutation;
         private int pos;
-        private string s;
-        private char to;
+
+
+        internal char Char { get; private set; }
+        internal int Digits { get;  private set; }
+        internal RegExp Expr1 { get;  private set; }
+        internal RegExp Expr2 { get; private set; }
+        internal char FromChar { get;  private set; }
+        internal Kind Kind { get;  private set; }
+        internal int Max { get;  private set; }
+        internal int Min { get; private set; }
+        internal string SourceRegExpr { get; private set; }
+        internal char ToChar { get; private set; }
+
 
         /// <summary>
         ///   Prevents a default instance of the <see cref = "RegExp" /> class from being created.
@@ -71,8 +75,7 @@ namespace Fare
         ///   Initializes a new instance of the <see cref = "RegExp" /> class from a string.
         /// </summary>
         /// <param name = "s">A string with the regular expression.</param>
-        public RegExp(string s)
-            : this(s, RegExpSyntaxOptions.All)
+        public RegExp(string s) : this(s, RegExpSyntaxOptions.All)
         {
         }
 
@@ -99,16 +102,16 @@ namespace Fare
                 }
             }
 
-            this.kind = e.kind;
-            this.exp1 = e.exp1;
-            this.exp2 = e.exp2;
-            this.s = e.s;
-            this.c = e.c;
-            this.min = e.min;
-            this.max = e.max;
-            this.digits = e.digits;
-            this.from = e.from;
-            this.to = e.to;
+            this.Kind = e.Kind;
+            this.Expr1 = e.Expr1;
+            this.Expr2 = e.Expr2;
+            this.SourceRegExpr = e.SourceRegExpr;
+            this.Char = e.Char;
+            this.Min= e.Min;
+            this.Max = e.Max;
+            this.Digits = e.Digits;
+            this.FromChar = e.FromChar;
+            this.ToChar = e.ToChar;
             this.b = null;
         }
 
@@ -190,9 +193,9 @@ namespace Fare
         /// <returns>The previous value of the flag.</returns>
         public bool SetAllowMutate(bool flag)
         {
-            bool @bool = allowMutation;
+            bool previous = allowMutation;
             allowMutation = flag;
-            return @bool;
+            return previous;
         }
 
         /// <inheritdoc />
@@ -215,49 +218,49 @@ namespace Fare
         private static RegExp MakeUnion(RegExp exp1, RegExp exp2)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpUnion;
-            r.exp1 = exp1;
-            r.exp2 = exp2;
+            r.Kind = Kind.RegexpUnion;
+            r.Expr1 = exp1;
+            r.Expr2 = exp2;
             return r;
         }
 
         private static RegExp MakeIntersection(RegExp exp1, RegExp exp2)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpIntersection;
-            r.exp1 = exp1;
-            r.exp2 = exp2;
+            r.Kind = Kind.RegexpIntersection;
+            r.Expr1 = exp1;
+            r.Expr2 = exp2;
             return r;
         }
 
         private static RegExp MakeConcatenation(RegExp exp1, RegExp exp2)
         {
-            if ((exp1.kind == Kind.RegexpChar || exp1.kind == Kind.RegexpString)
-                && (exp2.kind == Kind.RegexpChar || exp2.kind == Kind.RegexpString))
+            if ((exp1.Kind == Kind.RegexpChar || exp1.Kind == Kind.RegexpString)
+                && (exp2.Kind == Kind.RegexpChar || exp2.Kind == Kind.RegexpString))
             {
                 return RegExp.MakeString(exp1, exp2);
             }
 
             var r = new RegExp();
-            r.kind = Kind.RegexpConcatenation;
-            if (exp1.kind == Kind.RegexpConcatenation
-                && (exp1.exp2.kind == Kind.RegexpChar || exp1.exp2.kind == Kind.RegexpString)
-                && (exp2.kind == Kind.RegexpChar || exp2.kind == Kind.RegexpString))
+            r.Kind = Kind.RegexpConcatenation;
+            if (exp1.Kind == Kind.RegexpConcatenation
+                && (exp1.Expr2.Kind == Kind.RegexpChar || exp1.Expr2.Kind == Kind.RegexpString)
+                && (exp2.Kind == Kind.RegexpChar || exp2.Kind == Kind.RegexpString))
             {
-                r.exp1 = exp1.exp1;
-                r.exp2 = RegExp.MakeString(exp1.exp2, exp2);
+                r.Expr1 = exp1.Expr1;
+                r.Expr2 = RegExp.MakeString(exp1.Expr2, exp2);
             }
-            else if ((exp1.kind == Kind.RegexpChar || exp1.kind == Kind.RegexpString)
-                     && exp2.kind == Kind.RegexpConcatenation
-                     && (exp2.exp1.kind == Kind.RegexpChar || exp2.exp1.kind == Kind.RegexpString))
+            else if ((exp1.Kind == Kind.RegexpChar || exp1.Kind == Kind.RegexpString)
+                     && exp2.Kind == Kind.RegexpConcatenation
+                     && (exp2.Expr1.Kind == Kind.RegexpChar || exp2.Expr1.Kind == Kind.RegexpString))
             {
-                r.exp1 = RegExp.MakeString(exp1, exp2.exp1);
-                r.exp2 = exp2.exp2;
+                r.Expr1 = RegExp.MakeString(exp1, exp2.Expr1);
+                r.Expr2 = exp2.Expr2;
             }
             else
             {
-                r.exp1 = exp1;
-                r.exp2 = exp2;
+                r.Expr1 = exp1;
+                r.Expr2 = exp2;
             }
 
             return r;
@@ -266,82 +269,82 @@ namespace Fare
         private static RegExp MakeRepeat(RegExp exp)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpRepeat;
-            r.exp1 = exp;
+            r.Kind = Kind.RegexpRepeat;
+            r.Expr1 = exp;
             return r;
         }
 
         private static RegExp MakeRepeat(RegExp exp, int min)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpRepeatMin;
-            r.exp1 = exp;
-            r.min = min;
+            r.Kind = Kind.RegexpRepeatMin;
+            r.Expr1 = exp;
+            r.Min= min;
             return r;
         }
 
         private static RegExp MakeRepeat(RegExp exp, int min, int max)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpRepeatMinMax;
-            r.exp1 = exp;
-            r.min = min;
-            r.max = max;
+            r.Kind = Kind.RegexpRepeatMinMax;
+            r.Expr1 = exp;
+            r.Min= min;
+            r.Max = max;
             return r;
         }
 
         private static RegExp MakeOptional(RegExp exp)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpOptional;
-            r.exp1 = exp;
+            r.Kind = Kind.RegexpOptional;
+            r.Expr1 = exp;
             return r;
         }
 
         private static RegExp MakeChar(char @char)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpChar;
-            r.c = @char;
+            r.Kind = Kind.RegexpChar;
+            r.Char = @char;
             return r;
         }
 
         private static RegExp MakeInterval(int min, int max, int digits)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpInterval;
-            r.min = min;
-            r.max = max;
-            r.digits = digits;
+            r.Kind = Kind.RegexpInterval;
+            r.Min= min;
+            r.Max = max;
+            r.Digits = digits;
             return r;
         }
 
         private static RegExp MakeAutomaton(string s)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpAutomaton;
-            r.s = s;
+            r.Kind = Kind.RegexpAutomaton;
+            r.SourceRegExpr = s;
             return r;
         }
 
         private static RegExp MakeAnyString()
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpAnyString;
+            r.Kind = Kind.RegexpAnyString;
             return r;
         }
 
         private static RegExp MakeEmpty()
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpEmpty;
+            r.Kind = Kind.RegexpEmpty;
             return r;
         }
 
         private static RegExp MakeAnyChar()
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpAnyChar;
+            r.Kind = Kind.RegexpAnyChar;
             return r;
         }
 
@@ -353,47 +356,47 @@ namespace Fare
         private static RegExp MakeCharRange(char from, char to)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpCharRange;
-            r.from = from;
-            r.to = to;
+            r.Kind = Kind.RegexpCharRange;
+            r.FromChar = from;
+            r.ToChar = to;
             return r;
         }
 
         private static RegExp MakeComplement(RegExp exp)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpComplement;
-            r.exp1 = exp;
+            r.Kind = Kind.RegexpComplement;
+            r.Expr1 = exp;
             return r;
         }
 
         private static RegExp MakeString(string @string)
         {
             var r = new RegExp();
-            r.kind = Kind.RegexpString;
-            r.s = @string;
+            r.Kind = Kind.RegexpString;
+            r.SourceRegExpr = @string;
             return r;
         }
 
         private static RegExp MakeString(RegExp exp1, RegExp exp2)
         {
             var sb = new StringBuilder();
-            if (exp1.kind == Kind.RegexpString)
+            if (exp1.Kind == Kind.RegexpString)
             {
-                sb.Append(exp1.s);
+                sb.Append(exp1.SourceRegExpr);
             }
             else
             {
-                sb.Append(exp1.c);
+                sb.Append(exp1.Char);
             }
 
-            if (exp2.kind == Kind.RegexpString)
+            if (exp2.Kind == Kind.RegexpString)
             {
-                sb.Append(exp2.s);
+                sb.Append(exp2.SourceRegExpr);
             }
             else
             {
-                sb.Append(exp2.c);
+                sb.Append(exp2.Char);
             }
 
             return RegExp.MakeString(sb.ToString());
@@ -426,52 +429,52 @@ namespace Fare
         {
             IList<Automaton> list;
             Automaton a = null;
-            switch (kind)
+            switch (this.Kind)
             {
                 case Kind.RegexpUnion:
                     list = new List<Automaton>();
-                    this.FindLeaves(exp1, Kind.RegexpUnion, list, automata, automatonProvider, minimize);
-                    this.FindLeaves(exp2, Kind.RegexpUnion, list, automata, automatonProvider, minimize);
+                    this.FindLeaves(Expr1, Kind.RegexpUnion, list, automata, automatonProvider, minimize);
+                    this.FindLeaves(Expr2, Kind.RegexpUnion, list, automata, automatonProvider, minimize);
                     a = BasicOperations.Union(list);
                     a.Minimize();
                     break;
                 case Kind.RegexpConcatenation:
                     list = new List<Automaton>();
-                    this.FindLeaves(exp1, Kind.RegexpConcatenation, list, automata, automatonProvider, minimize);
-                    this.FindLeaves(exp2, Kind.RegexpConcatenation, list, automata, automatonProvider, minimize);
+                    this.FindLeaves(Expr1, Kind.RegexpConcatenation, list, automata, automatonProvider, minimize);
+                    this.FindLeaves(Expr2, Kind.RegexpConcatenation, list, automata, automatonProvider, minimize);
                     a = BasicOperations.Concatenate(list);
                     a.Minimize();
                     break;
                 case Kind.RegexpIntersection:
-                    a = exp1.ToAutomaton(automata, automatonProvider, minimize)
-                        .Intersection(exp2.ToAutomaton(automata, automatonProvider, minimize));
+                    a = Expr1.ToAutomaton(automata, automatonProvider, minimize)
+                        .Intersection(Expr2.ToAutomaton(automata, automatonProvider, minimize));
                     a.Minimize();
                     break;
                 case Kind.RegexpOptional:
-                    a = exp1.ToAutomaton(automata, automatonProvider, minimize).Optional();
+                    a = Expr1.ToAutomaton(automata, automatonProvider, minimize).Optional();
                     a.Minimize();
                     break;
                 case Kind.RegexpRepeat:
-                    a = exp1.ToAutomaton(automata, automatonProvider, minimize).Repeat();
+                    a = Expr1.ToAutomaton(automata, automatonProvider, minimize).Repeat();
                     a.Minimize();
                     break;
                 case Kind.RegexpRepeatMin:
-                    a = exp1.ToAutomaton(automata, automatonProvider, minimize).Repeat(min);
+                    a = Expr1.ToAutomaton(automata, automatonProvider, minimize).Repeat(Min);
                     a.Minimize();
                     break;
                 case Kind.RegexpRepeatMinMax:
-                    a = exp1.ToAutomaton(automata, automatonProvider, minimize).Repeat(min, max);
+                    a = Expr1.ToAutomaton(automata, automatonProvider, minimize).Repeat(Min, Max);
                     a.Minimize();
                     break;
                 case Kind.RegexpComplement:
-                    a = exp1.ToAutomaton(automata, automatonProvider, minimize).Complement();
+                    a = Expr1.ToAutomaton(automata, automatonProvider, minimize).Complement();
                     a.Minimize();
                     break;
                 case Kind.RegexpChar:
-                    a = BasicAutomata.MakeChar(c);
+                    a = BasicAutomata.MakeChar(this.Char);
                     break;
                 case Kind.RegexpCharRange:
-                    a = BasicAutomata.MakeCharRange(from, to);
+                    a = BasicAutomata.MakeCharRange(FromChar, ToChar);
                     break;
                 case Kind.RegexpAnyChar:
                     a = BasicAutomata.MakeAnyChar();
@@ -480,7 +483,7 @@ namespace Fare
                     a = BasicAutomata.MakeEmpty();
                     break;
                 case Kind.RegexpString:
-                    a = BasicAutomata.MakeString(s);
+                    a = BasicAutomata.MakeString(SourceRegExpr);
                     break;
                 case Kind.RegexpAnyString:
                     a = BasicAutomata.MakeAnyString();
@@ -489,14 +492,14 @@ namespace Fare
                     Automaton aa = null;
                     if (automata != null)
                     {
-                        automata.TryGetValue(s, out aa);
+                        automata.TryGetValue(SourceRegExpr, out aa);
                     }
 
                     if (aa == null && automatonProvider != null)
                     {
                         try
                         {
-                            aa = automatonProvider.GetAutomaton(s);
+                            aa = automatonProvider.GetAutomaton(SourceRegExpr);
                         }
                         catch (IOException e)
                         {
@@ -506,13 +509,13 @@ namespace Fare
 
                     if (aa == null)
                     {
-                        throw new ArgumentException("'" + s + "' not found");
+                        throw new ArgumentException("'" + SourceRegExpr + "' not found");
                     }
 
                     a = aa.Clone(); // Always clone here (ignore allowMutate).
                     break;
                 case Kind.RegexpInterval:
-                    a = BasicAutomata.MakeInterval(min, max, digits);
+                    a = BasicAutomata.MakeInterval(Min, Max, Digits);
                     break;
             }
 
@@ -527,10 +530,10 @@ namespace Fare
             IAutomatonProvider automatonProvider,
             bool minimize)
         {
-            if (exp.kind == regExpKind)
+            if (exp.Kind == regExpKind)
             {
-                this.FindLeaves(exp.exp1, regExpKind, list, automata, automatonProvider, minimize);
-                this.FindLeaves(exp.exp2, regExpKind, list, automata, automatonProvider, minimize);
+                this.FindLeaves(exp.Expr1, regExpKind, list, automata, automatonProvider, minimize);
+                this.FindLeaves(exp.Expr2, regExpKind, list, automata, automatonProvider, minimize);
             }
             else
             {
@@ -538,90 +541,92 @@ namespace Fare
             }
         }
 
-        private StringBuilder ToStringBuilder(StringBuilder sb)
+        // TODO: make private after removing use from AST
+        internal StringBuilder ToStringBuilder(StringBuilder sb)
         {
-            switch (kind)
+            switch (Kind)
             {
                 case Kind.RegexpUnion:
                     sb.Append("(");
-                    exp1.ToStringBuilder(sb);
+                    Expr1.ToStringBuilder(sb);
                     sb.Append("|");
-                    exp2.ToStringBuilder(sb);
+                    Expr2.ToStringBuilder(sb);
                     sb.Append(")");
                     break;
                 case Kind.RegexpConcatenation:
-                    exp1.ToStringBuilder(sb);
-                    exp2.ToStringBuilder(sb);
+                    Expr1.ToStringBuilder(sb);
+                    Expr2.ToStringBuilder(sb);
                     break;
                 case Kind.RegexpIntersection:
                     sb.Append("(");
-                    exp1.ToStringBuilder(sb);
+                    Expr1.ToStringBuilder(sb);
                     sb.Append("&");
-                    exp2.ToStringBuilder(sb);
+                    Expr2.ToStringBuilder(sb);
                     sb.Append(")");
                     break;
                 case Kind.RegexpOptional:
                     sb.Append("(");
-                    exp1.ToStringBuilder(sb);
+                    Expr1.ToStringBuilder(sb);
                     sb.Append(")?");
                     break;
                 case Kind.RegexpRepeat:
                     sb.Append("(");
-                    exp1.ToStringBuilder(sb);
+                    Expr1.ToStringBuilder(sb);
                     sb.Append(")*");
                     break;
                 case Kind.RegexpRepeatMin:
                     sb.Append("(");
-                    exp1.ToStringBuilder(sb);
-                    sb.Append("){").Append(min).Append(",}");
+                    Expr1.ToStringBuilder(sb);
+                    sb.Append("){").Append(Min).Append(",}");
                     break;
                 case Kind.RegexpRepeatMinMax:
                     sb.Append("(");
-                    exp1.ToStringBuilder(sb);
-                    sb.Append("){").Append(min).Append(",").Append(max).Append("}");
+                    Expr1.ToStringBuilder(sb);
+                    sb.Append("){").Append(Min).Append(",").Append(Max).Append("}");
                     break;
                 case Kind.RegexpComplement:
                     sb.Append("~(");
-                    exp1.ToStringBuilder(sb);
+                    Expr1.ToStringBuilder(sb);
                     sb.Append(")");
                     break;
                 case Kind.RegexpChar:
-                    sb.Append("\\").Append(c);
+                    sb.Append(this.Char);
                     break;
                 case Kind.RegexpCharRange:
-                    sb.Append("[\\").Append(from).Append("-\\").Append(to).Append("]");
+                    sb.Append("[").Append(FromChar).Append("-").Append(ToChar).Append("]");
                     break;
                 case Kind.RegexpAnyChar:
                     sb.Append(".");
                     break;
                 case Kind.RegexpEmpty:
-                    sb.Append("#");
+                    sb.Append(string.Empty);    // TODO: consider not appending at all
                     break;
                 case Kind.RegexpString:
-                    sb.Append("\"").Append(s).Append("\"");
+//                     sb.Append("\"").Append(SourceRegExpr).Append("\"");  // TODO: REMOVE:
+                    sb.Append(SourceRegExpr);
                     break;
                 case Kind.RegexpAnyString:
                     sb.Append("@");
                     break;
                 case Kind.RegexpAutomaton:
-                    sb.Append("<").Append(s).Append(">");
+                    sb.Append("<").Append(SourceRegExpr).Append(">");
                     break;
                 case Kind.RegexpInterval:
-                    string s1 = Convert.ToDecimal(min).ToString();
-                    string s2 = Convert.ToDecimal(max).ToString();
+                    string s1 = Convert.ToDecimal(Min).ToString(NumberFormatInfo.CurrentInfo);
+                    string s2 = Convert.ToDecimal(Max).ToString(NumberFormatInfo.CurrentInfo);
                     sb.Append("<");
-                    if (digits > 0)
+                    if (Digits > 0)
                     {
-                        for (int i = s1.Length; i < digits; i++)
+                        for (int i = s1.Length; i < Digits; i++)
                         {
                             sb.Append('0');
                         }
                     }
 
                     sb.Append(s1).Append("-");
-                    if (digits > 0)
+                    if (Digits > 0)
                     {
-                        for (int i = s2.Length; i < digits; i++)
+                        for (int i = s2.Length; i < Digits; i++)
                         {
                             sb.Append('0');
                         }
@@ -636,23 +641,23 @@ namespace Fare
 
         private void GetIdentifiers(HashSet<string> set)
         {
-            switch (kind)
+            switch (Kind)
             {
                 case Kind.RegexpUnion:
                 case Kind.RegexpConcatenation:
                 case Kind.RegexpIntersection:
-                    exp1.GetIdentifiers(set);
-                    exp2.GetIdentifiers(set);
+                    Expr1.GetIdentifiers(set);
+                    Expr2.GetIdentifiers(set);
                     break;
                 case Kind.RegexpOptional:
                 case Kind.RegexpRepeat:
                 case Kind.RegexpRepeatMin:
                 case Kind.RegexpRepeatMinMax:
                 case Kind.RegexpComplement:
-                    exp1.GetIdentifiers(set);
+                    Expr1.GetIdentifiers(set);
                     break;
                 case Kind.RegexpAutomaton:
-                    set.Add(s);
+                    set.Add(SourceRegExpr);
                     break;
             }
         }
@@ -751,7 +756,7 @@ namespace Fare
                         throw new ArgumentException("integer expected at position " + pos);
                     }
 
-                    int n = int.Parse(b.Substring(start, pos - start));
+                    int n = int.Parse(b.Substring(start, pos - start), NumberFormatInfo.CurrentInfo);
                     int m = -1;
                     if (this.Match(','))
                     {
@@ -763,7 +768,7 @@ namespace Fare
 
                         if (start != pos)
                         {
-                            m = int.Parse(b.Substring(start, pos - start));
+                            m = int.Parse(b.Substring(start, pos - start), NumberFormatInfo.CurrentInfo);
                         }
                     }
                     else
@@ -929,8 +934,8 @@ namespace Fare
 
                     string smin = str.Substring(0, i - 0);
                     string smax = str.Substring(i + 1, (str.Length - (i + 1)));
-                    int imin = int.Parse(smin);
-                    int imax = int.Parse(smax);
+                    int imin = int.Parse(smin, System.Globalization.NumberFormatInfo.CurrentInfo);
+                    int imax = int.Parse(smax, System.Globalization.NumberFormatInfo.CurrentInfo);
                     int numdigits = smin.Length == smax.Length ? smin.Length : 0;
                     if (imin > imax)
                     {
@@ -1029,24 +1034,5 @@ namespace Fare
             return MakeIntersection(allChars, MakeComplement(exclusion));
         }
 
-        private enum Kind
-        {
-            RegexpUnion,
-            RegexpConcatenation,
-            RegexpIntersection,
-            RegexpOptional,
-            RegexpRepeat,
-            RegexpRepeatMin,
-            RegexpRepeatMinMax,
-            RegexpComplement,
-            RegexpChar,
-            RegexpCharRange,
-            RegexpAnyChar,
-            RegexpEmpty,
-            RegexpString,
-            RegexpAnyString,
-            RegexpAutomaton,
-            RegexpInterval
-        }
     }
 }

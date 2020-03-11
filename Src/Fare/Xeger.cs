@@ -43,12 +43,12 @@ namespace Fare
         {
             if (string.IsNullOrEmpty(regex))
             {
-                throw new ArgumentNullException("regex");
+                throw new ArgumentNullException(nameof(regex));
             }
 
             if (random == null)
             {
-                throw new ArgumentNullException("random");
+                throw new ArgumentNullException(nameof(random));
             }
 
 
@@ -123,14 +123,15 @@ namespace Fare
             builder.Append(c);
         }
 
-        private string RemoveStartEndMarkers(string regExp)
+        private static string RemoveStartEndMarkers(string regExp)
         {
-            if (regExp.StartsWith("^"))
+            if (regExp.StartsWith("^", System.StringComparison.CurrentCulture))
             {
                 regExp = regExp.Substring(1);
             }
 
-            if (regExp.EndsWith("$"))
+            // BUGBUG: this fails to remove $ if followed by any white space
+            if (regExp.EndsWith("$", System.StringComparison.CurrentCulture))
             {
                 regExp = regExp.Substring(0, regExp.Length - 1);
             }

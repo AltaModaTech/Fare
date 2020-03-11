@@ -105,6 +105,9 @@ namespace Fare
             return !Equals(left, right);
         }
 
+
+        #region Object impl
+
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
@@ -138,22 +141,25 @@ namespace Fare
             }
         }
 
-
         /// <inheritdoc />
-        public int CompareTo(object other)
+        public override string ToString()
         {
-            if (other == null)
+            var sb = new StringBuilder();
+            sb.Append("state ").Append(this.Number);
+            sb.Append(this.Accept ? " [accept]" : " [reject]");
+            sb.Append(":\n");
+            foreach (Transition t in this.Transitions)
             {
-                return 1;
+                sb.Append("  ").Append(t.ToString()).Append("\n");
             }
 
-            if (other.GetType() != typeof(State))
-            {
-                throw new ArgumentException("Object is not a State");
-            }
-
-            return this.CompareTo((State)other);
+            return sb.ToString();
         }
+
+        #endregion Object impl
+
+
+        #region IEquatable<State> impl
 
         /// <inheritdoc />
         public bool Equals(State other)
@@ -173,26 +179,42 @@ namespace Fare
                 && other.Number == Number;
         }
 
+        #endregion IEquatable<State> impl
+
+
+        #region  IComparable<State> impl
+
         /// <inheritdoc />
         public int CompareTo(State other)
         {
+            if (null == other) { return 1; }
+            
             return other.Id - this.Id;
         }
 
+        #endregion  IComparable<State> impl
+
+
+        #region  IComparable impl
+
         /// <inheritdoc />
-        public override string ToString()
+        public int CompareTo(object other)
         {
-            var sb = new StringBuilder();
-            sb.Append("state ").Append(this.Number);
-            sb.Append(this.Accept ? " [accept]" : " [reject]");
-            sb.Append(":\n");
-            foreach (Transition t in this.Transitions)
+            if (other == null)
             {
-                sb.Append("  ").Append(t.ToString()).Append("\n");
+                return 1;
             }
 
-            return sb.ToString();
+            if (other.GetType() != typeof(State))
+            {
+                throw new ArgumentException("Object is not a State");
+            }
+
+            return this.CompareTo((State)other);
         }
+
+        #endregion  IComparable impl
+
 
         /// <summary>
         /// Adds an outgoing transition.
@@ -248,6 +270,7 @@ namespace Fare
             Array.Sort(e, new TransitionComparer(toFirst));
             return e.ToList();
         }
+
 
         internal void AddEpsilon(State to)
         {

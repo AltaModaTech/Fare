@@ -1,8 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\Common.props" />
 
-  <PropertyGroup>
+  <!-- Target frameworks by platform  -->
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <AssemblyTitle>Fare</AssemblyTitle>
     <AssemblyName>Fare</AssemblyName>
     <Copyright>Copyright © Nikos Baxevanis 2016</Copyright>
@@ -23,4 +30,10 @@
     <PackageLicenseUrl>https://github.com/moodmosaic/Fare/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>Regex Test NFA DFA Automaton</PackageTags>
   </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="microsoft.extensions.logging" Version="2.2.0" />
+    <PackageReference Include="microsoft.extensions.logging.console" Version="2.2.0" />
+  </ItemGroup>
+  
 </Project>
