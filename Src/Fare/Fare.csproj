@@ -3,10 +3,10 @@
 
   <!-- Target frameworks by platform  -->
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -31,9 +31,9 @@
     <PackageTags>Regex Test NFA DFA Automaton</PackageTags>
   </PropertyGroup>
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="microsoft.extensions.logging" Version="2.2.0" />
-    <PackageReference Include="microsoft.extensions.logging.console" Version="2.2.0" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'netstandard2.1'">
+    <PackageReference Include="microsoft.extensions.logging" Version="3.*" />
+    <PackageReference Include="microsoft.extensions.logging.console" Version="3.*" />
   </ItemGroup>
   
 </Project>
